@@ -1,234 +1,170 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, Pressable, TouchableOpacity, ImageBackground, Platform, KeyboardAvoidingView } from 'react-native';
+import BackgroundImage from '../img/BackgroundImage.png';
 
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ImageBackground,
-  TouchableOpacity,
-} from "react-native";
+// Create constant that holds background colors for Chat Screen
+const colors = {
+    black: "#090C08",
+    purple: "#474056",
+    grey: "#8A95A5",
+    green: "#B9C6AE",
+};
 
-import BackgroundImage from "../assets/backgroundImage";
+export default function Start(props) {
+    let [name, setName] = useState();
+    let [color, setColor] = useState();
 
-export default class Start extends React.Component {
-  constructor(props) {
-    super(props);
+    // State to hold information if user is offline or online
+    const [isConnected, setIsConnected] = useState(false);
 
-    this.state = {
-      name: "",
-      bgColor: this.colors.pink,
-    };
-  }
 
-  // function to update the state with the new background color for Chat Screen chosen by the user
-   changeBgColor = (newColor) => {
-      this.setState({ bgColor: newColor });
-  };
 
-  colors = {
-    red: "#890000",
-    green: "#1DA01B",
-    gold: "#9D7F15",
-    pink: "#931560",
-    blue: "#1B70A0",
-  };
-
-  render() {
-    return (
-      //Different components do differents things; View acts as a div from html
-      <View style={styles.container}>
-        <ImageBackground
-          source={BackgroundImage}
-          resizeMode="cover"
-          style={styles.backgroundImage}
-        >
-          <View style={styles.titleBox}>
-            <Text style={styles.title}>Safe Chats</Text>
-          </View>
-
-          <View style={styles.box1}>
-            <View style={styles.inputBox}>
-              <TextInput
-                style={styles.input}
-                onChangeText={(text) => this.setState({ name: text })}
-                value={this.state.name}
-                placeholder="What is your name?"
-              />
-            </View>
-
-            <View style={styles.colorBox}>
-              <Text style={styles.chooseColor}>
-                {" "}
-                Pick your background color!{" "}
-              </Text>
-            </View>
-
-            <View style={styles.colorArray}>
-              <TouchableOpacity
-                style={styles.color1}
-                onPress={() => this.changeBgColor(this.colors.red)}
-              ></TouchableOpacity>
-              <TouchableOpacity
-                style={styles.color2}
-                onPress={() => this.changeBgColor(this.colors.green)}
-              ></TouchableOpacity>
-              <TouchableOpacity
-                style={styles.color3}
-                onPress={() => this.changeBgColor(this.colors.gold)}
-              ></TouchableOpacity>
-              <TouchableOpacity
-                style={styles.color4}
-                onPress={() => this.changeBgColor(this.colors.pink)}
-              ></TouchableOpacity>
-              <TouchableOpacity
-                style={styles.color5}
-                onPress={() => this.changeBgColor(this.colors.blue)}
-              ></TouchableOpacity>
-            </View>
-
-            <Pressable
-              style={styles.button}
-              onPress={() =>
-                this.props.navigation.navigate("Chat", {
-                  name: this.state.name,
-                  bgColor: this.state.bgColor,
+    // Authenticate the user via Firebase and then redirect to the chat screen, passing the name and color props
+    const onHandleStart = () => {
+        if (isConnected) {
+            signInAnonymously(auth)
+                .then(() => {
+                    console.log('Login success');
+                    props.navigation.navigate('Chat', { name: name, color: color });
                 })
-              }
+                .catch(err => console.log(`Login err: ${err}`));
+        }
+        else {
+            props.navigation.navigate('Chat', { name: name, color: color });
+        }
+    }
+
+
+
+
+    return (
+        <View style={styles.container}>
+            <ImageBackground
+                source={BackgroundImage}
+                resizeMode='cover'
+                style={styles.image}
             >
-              <Text style={styles.buttonText}>Start Chatting</Text>
-            </Pressable>
-          </View>
-        </ImageBackground>
-      </View>
-    );
-  }
+
+                <Text style={styles.title}>App title</Text>
+
+                <View style={styles.box}>
+
+                    {/* Input box to set user name passed to chat screen */}
+                    <TextInput
+                        onChangeText={(name) => setName(name)}
+                        value={name}
+                        style={styles.input}
+                        placeholder='Enter your name here ...'
+                    />
+
+                    {/* Allow user to choose a background color for the chat screen */}
+                    <Text style={styles.text}>Choose Background Color:</Text>
+                    <View style={styles.colorContainer}>
+                        <TouchableOpacity
+                            style={[{ backgroundColor: colors.black }, styles.colorbutton]}
+                            onPress={() => setColor(colors.black)}
+                        />
+                        <TouchableOpacity
+                            style={[{ backgroundColor: colors.purple }, styles.colorbutton]}
+                            onPress={() => setColor(colors.purple)}
+                        />
+                        <TouchableOpacity
+                            style={[{ backgroundColor: colors.grey }, styles.colorbutton]}
+                            onPress={() => setColor(colors.grey)}
+                        />
+                        <TouchableOpacity
+                            style={[{ backgroundColor: colors.green }, styles.colorbutton]}
+                            onPress={() => setColor(colors.green)}
+                        />
+                    </View>
+
+                    {/* Authenticate user & Open chatroom, passing user name and background color as props */}
+                    <Pressable
+                        onPress={onHandleStart}
+                        style={({ pressed }) => [
+                            {
+                                backgroundColor: pressed
+                                    ? '#585563'
+                                    : '#757083'
+                            },
+                            styles.button
+                        ]}
+                    >
+                        <Text style={styles.buttontext}>Start Chatting</Text>
+                    </Pressable>
+                </View>
+            </ImageBackground>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+    container: {
+        flex: 1,
+    },
 
-  backgroundImage: {
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    image: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
 
-  titleBox: {
-    height: "50%",
-    width: "88%",
-    alignItems: "center",
-    paddingTop: 100,
-  },
+    title: {
+        fontSize: 45,
+        fontWeight: '600',
+        color: '#ffffff',
+    },
 
-  title: {
-    fontSize: 45,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    box: {
+        width: '88%',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        height: '44%',
+        justifyContent: 'space-evenly',
 
-  box1: {
-    backgroundColor: "white",
-    height: "46%",
-    width: "88%",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
+    },
 
-  inputBox: {
-    borderWidth: 2,
-    borderRadius: 1,
-    borderColor: "grey",
-    width: "88%",
-    height: 60,
-    paddingLeft: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
+    input: {
+        height: 50,
+        width: '88%',
+        fontSize: 16,
+        fontWeight: '300',
+        color: '#757083',
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingHorizontal: 10,
 
-  image: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
+    },
 
-  input: {
-    fontSize: 16,
-    fontWeight: "300",
-    color: "#757083",
-    opacity: 0.5,
-  },
+    text: {
+        color: '#757083',
+        fontSize: 16,
+        fontWeight: '300',
+    },
 
-  colorBox: {
-    marginRight: "auto",
-    paddingLeft: 15,
-    width: "88%",
-  },
+    colorContainer: {
+        width: '88%',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
 
-  chooseColor: {
-    fontSize: 16,
-    fontWeight: "300",
-    color: "#757083",
-    opacity: 1,
-  },
+    colorbutton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+    },
 
-  colorArray: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
-  },
+    button: {
+        height: 50,
+        width: '88%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 
-  color1: {
-    backgroundColor: "#890000",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
-  color2: {
-    backgroundColor: "#1DA01B",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
-  color3: {
-    backgroundColor: "#9D7F15",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
-  color4: {
-    backgroundColor: "#931560",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
-  color5: {
-    backgroundColor: "#1B70A0",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-
-  button: {
-    width: "88%",
-    height: 70,
-    borderRadius: 8,
-    backgroundColor: "#1D6085",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
+    buttontext: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '600',
+    }
 });

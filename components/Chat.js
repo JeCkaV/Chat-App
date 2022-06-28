@@ -1,25 +1,27 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-export default class Chat extends React.Component {
-  render() {
-    // This will allow the user to enter it's name for the Chat app
-    let name = this.props.route.params.name;
-    this.props.navigation.setOptions({ title: name });
 
-    const { bgColor } = this.props.route.params;
+export default function Chat(props) {
+
+    // Retrieving the name and color properties passed from the Start Screen
+    let { name, color } = props.route.params;
+    useEffect(() => {
+
+        // Set the screen title to the user name entered in the start screen
+        props.navigation.setOptions({ title: name });
+    }
+    )
 
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: bgColor,
-        }}
-      >
-        <Text>Welcome to Safe Chats!</Text>
-      </View>
-    );
-  }
+        // Setting the background color to the color picked by the user in the start screen
+        <View style={[{ backgroundColor: color }, styles.container]}>
+        </View>
+    )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+})
