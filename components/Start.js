@@ -11,7 +11,7 @@ import NetInfo from '@react-native-community/netinfo';
 const colors = {
     pink: "#FFC0CB",
     purple: "#474056",
-    grey: "#8A95A5",
+    violet: "#EE82EE",
     green: "#B9C6AE",
 };
 
@@ -83,7 +83,7 @@ export default function Start(props) {
                             onPress={() => setColor(colors.purple)}
                         />
                         <TouchableOpacity
-                            style={[{ backgroundColor: colors.grey }, styles.colorbutton]}
+                            style={[{ backgroundColor: colors.violet }, styles.colorbutton]}
                             onPress={() => setColor(colors.grey)}
                         />
                         <TouchableOpacity
